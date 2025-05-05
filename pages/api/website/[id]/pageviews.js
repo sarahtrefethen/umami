@@ -1,7 +1,7 @@
 import moment from 'moment-timezone';
 import { getPageviewStats } from 'lib/queries';
 import { ok, badRequest, methodNotAllowed, unauthorized } from 'lib/response';
-import { allowQuery } from 'lib/auth';
+import { allowQuery, getAuthToken } from 'lib/auth';
 
 const unitTypes = ['year', 'month', 'hour', 'day'];
 
@@ -10,7 +10,7 @@ export default async (req, res) => {
     if (!(await allowQuery(req))) {
       return unauthorized(res);
     }
-
+    const { pan_account_id } = await getAuthToken(req);
     const { id, start_at, end_at, unit, tz, url } = req.query;
 
     const websiteId = +id;
@@ -22,8 +22,17 @@ export default async (req, res) => {
     }
 
     const [pageviews, sessions] = await Promise.all([
-      getPageviewStats(websiteId, startDate, endDate, tz, unit, '*', url),
-      getPageviewStats(websiteId, startDate, endDate, tz, unit, 'distinct session_id', url),
+      getPageviewStats(websiteId, startDate, endDate, tz, unit, '*', url, pan_account_id),
+      getPageviewStats(
+        websiteId,
+        startDate,
+        endDate,
+        tz,
+        unit,
+        'distinct session_id',
+        url,
+        pan_account_id,
+      ),
     ]);
 
     return ok(res, { pageviews, sessions });

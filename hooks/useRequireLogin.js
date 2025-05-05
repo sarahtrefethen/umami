@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUser } from 'redux/actions/user';
 import { useRouter } from 'next/router';
-import { get } from 'lib/web';
+import { get, setItem } from 'lib/web';
 
 export default function useRequireLogin() {
   const router = useRouter();
@@ -15,6 +15,8 @@ export default function useRequireLogin() {
     setLoading(true);
 
     const { ok, data } = await get(`${router.basePath}/api/auth/verify`);
+
+    setItem('pan_account_id', data['pan_account_id'], true);
 
     if (!ok) {
       return router.push('/login');

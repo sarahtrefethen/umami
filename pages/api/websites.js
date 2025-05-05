@@ -5,7 +5,7 @@ import { ok, methodNotAllowed, unauthorized } from 'lib/response';
 export default async (req, res) => {
   await useAuth(req, res);
 
-  const { user_id: current_user_id, is_admin } = req.auth;
+  const { user_id: current_user_id, is_admin, pan_account_id } = req.auth;
   const { user_id } = req.query;
   const userId = +user_id;
 
@@ -14,7 +14,7 @@ export default async (req, res) => {
       return unauthorized(res);
     }
 
-    const websites = await getUserWebsites(userId || current_user_id);
+    const websites = await getUserWebsites(userId || current_user_id, pan_account_id);
 
     return ok(res, websites);
   }

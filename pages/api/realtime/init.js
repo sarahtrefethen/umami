@@ -8,12 +8,12 @@ export default async (req, res) => {
   await useAuth(req, res);
 
   if (req.method === 'GET') {
-    const { user_id } = req.auth;
+    const { user_id, pan_account_id } = req.auth;
 
-    const websites = await getUserWebsites(user_id);
+    const websites = await getUserWebsites(user_id, pan_account_id);
     const ids = websites.map(({ website_id }) => website_id);
     const token = await createToken({ websites: ids });
-    const data = await getRealtimeData(ids, subMinutes(new Date(), 30));
+    const data = await getRealtimeData(ids, subMinutes(new Date(), 30), pan_account_id);
 
     return ok(res, {
       websites,

@@ -1,6 +1,6 @@
 import isbot from 'isbot';
 import ipaddr from 'ipaddr.js';
-import { savePageView, saveEvent } from 'lib/queries';
+import { savePageView, saveEvent, getWebsiteById } from 'lib/queries';
 import { useCors, useSession } from 'lib/middleware';
 import { getIpAddress } from 'lib/request';
 import { ok, badRequest } from 'lib/response';
@@ -36,20 +36,23 @@ export default async (req, res) => {
   }
 
   await useSession(req, res);
-
   const { type, payload } = req.body;
   const {
     session: { website_id, session_id },
   } = req;
 
+  //Need to set the account_id as pandium's as this is a backend/system process with no context of the account
+  const website = await getWebsiteById(website_id, 420);
+  const pan_account_id = website['pan_account_id'];
+
   if (type === 'pageview') {
     const { url, referrer } = payload;
 
-    await savePageView(website_id, session_id, url, referrer);
+    await savePageView(website_id, session_id, url, referrer, pan_account_id);
   } else if (type === 'event') {
     const { url, event_type, event_value } = payload;
 
-    await saveEvent(website_id, session_id, url, event_type, event_value);
+    await saveEvent(website_id, session_id, url, event_type, event_value, pan_account_id);
   } else {
     return badRequest(res);
   }

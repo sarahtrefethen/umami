@@ -9,7 +9,7 @@ export default async (req, res) => {
 
   if (req.method === 'GET') {
     const { start_at } = req.query;
-
+    const { pan_account_id } = req.auth;
     const token = req.headers[TOKEN_HEADER];
 
     if (!token) {
@@ -18,7 +18,7 @@ export default async (req, res) => {
 
     const { websites } = await parseToken(token);
 
-    const data = await getRealtimeData(websites, new Date(+start_at));
+    const data = await getRealtimeData(websites, new Date(+start_at), pan_account_id);
 
     return ok(res, data);
   }

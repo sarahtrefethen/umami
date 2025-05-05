@@ -1,10 +1,10 @@
 import { deleteWebsite, getWebsiteById } from 'lib/queries';
 import { methodNotAllowed, ok, unauthorized } from 'lib/response';
-import { allowQuery } from 'lib/auth';
+import { allowQuery, getAuthToken } from 'lib/auth';
 
 export default async (req, res) => {
   const { id } = req.query;
-
+  const { pan_account_id } = await getAuthToken(req);
   const websiteId = +id;
 
   if (req.method === 'GET') {
@@ -12,7 +12,7 @@ export default async (req, res) => {
       return unauthorized(res);
     }
 
-    const website = await getWebsiteById(websiteId);
+    const website = await getWebsiteById(websiteId, pan_account_id);
 
     return ok(res, website);
   }
@@ -22,7 +22,7 @@ export default async (req, res) => {
       return unauthorized(res);
     }
 
-    await deleteWebsite(websiteId);
+    await deleteWebsite(websiteId, pan_account_id);
 
     return ok(res);
   }

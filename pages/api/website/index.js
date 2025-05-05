@@ -6,14 +6,14 @@ import { ok, unauthorized, methodNotAllowed } from 'lib/response';
 export default async (req, res) => {
   await useAuth(req, res);
 
-  const { user_id, is_admin } = req.auth;
+  const { user_id, is_admin, pan_account_id } = req.auth;
   const { website_id, enable_share_url } = req.body;
 
   if (req.method === 'POST') {
     const { name, domain } = req.body;
 
     if (website_id) {
-      const website = await getWebsiteById(website_id);
+      const website = await getWebsiteById(website_id, pan_account_id);
 
       if (website.user_id !== user_id && !is_admin) {
         return unauthorized(res);
@@ -27,13 +27,17 @@ export default async (req, res) => {
         share_id = null;
       }
 
-      await updateWebsite(website_id, { name, domain, share_id });
+      await updateWebsite(website_id, { name, domain, share_id }, pan_account_id);
 
       return ok(res);
     } else {
       const website_uuid = uuid();
       const share_id = enable_share_url ? getRandomChars(8) : null;
-      const website = await createWebsite(user_id, { website_uuid, name, domain, share_id });
+      const website = await createWebsite(
+        user_id,
+        { website_uuid, name, domain, share_id },
+        pan_account_id,
+      );
 
       return ok(res, website);
     }

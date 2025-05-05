@@ -15,6 +15,7 @@ model account {
   created_at DateTime? @default(now()) @db.Timestamptz(6)
   updated_at DateTime? @default(now()) @db.Timestamptz(6)
   website    website[]
+  pan_account_id Int?
 }
 
 model event {
@@ -27,6 +28,7 @@ model event {
   event_value String    @db.VarChar(50)
   session     session   @relation(fields: [session_id], references: [session_id])
   website     website   @relation(fields: [website_id], references: [website_id])
+  pan_account_id Int?
 
   @@index([created_at], name: "event_created_at_idx")
   @@index([session_id], name: "event_session_id_idx")
@@ -42,6 +44,7 @@ model pageview {
   referrer   String?   @db.VarChar(500)
   session    session   @relation(fields: [session_id], references: [session_id])
   website    website   @relation(fields: [website_id], references: [website_id])
+  pan_account_id Int?
 
   @@index([created_at], name: "pageview_created_at_idx")
   @@index([session_id], name: "pageview_session_id_idx")
@@ -65,6 +68,7 @@ model session {
   website      website    @relation(fields: [website_id], references: [website_id])
   event        event[]
   pageview     pageview[]
+  pan_account_id Int?
 
   @@index([created_at], name: "session_created_at_idx")
   @@index([website_id], name: "session_website_id_idx")
@@ -82,6 +86,7 @@ model website {
   event        event[]
   pageview     pageview[]
   session      session[]
+  pan_account_id Int?
 
   @@index([user_id], name: "website_user_id_idx")
 }

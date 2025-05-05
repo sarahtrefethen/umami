@@ -5,7 +5,7 @@ import { methodNotAllowed, ok, unauthorized } from 'lib/response';
 export default async (req, res) => {
   await useAuth(req, res);
 
-  const { is_admin } = req.auth;
+  const { is_admin, pan_account_id } = req.auth;
   const { id } = req.query;
   const user_id = +id;
 
@@ -14,7 +14,7 @@ export default async (req, res) => {
   }
 
   if (req.method === 'GET') {
-    const account = await getAccountById(user_id);
+    const account = await getAccountById(user_id, pan_account_id);
 
     return ok(res, account);
   }
