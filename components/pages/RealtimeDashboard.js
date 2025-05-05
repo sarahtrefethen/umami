@@ -1,19 +1,12 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { FormattedMessage } from 'react-intl';
+import React, { useState, useEffect, useMemo } from 'react';
 import { subMinutes, startOfMinute } from 'date-fns';
-import firstBy from 'thenby';
 import Page from 'components/layout/Page';
 import GridLayout, { GridRow, GridColumn } from 'components/layout/GridLayout';
 import RealtimeChart from 'components/metrics/RealtimeChart';
 import RealtimeLog from 'components/metrics/RealtimeLog';
 import RealtimeHeader from 'components/metrics/RealtimeHeader';
-import WorldMap from 'components/common/WorldMap';
-import DataTable from 'components/metrics/DataTable';
 import RealtimeViews from 'components/metrics/RealtimeViews';
 import useFetch from 'hooks/useFetch';
-import useLocale from 'hooks/useLocale';
-import useCountryNames from 'hooks/useCountryNames';
-import { percentFilter } from 'lib/filters';
 import { TOKEN_HEADER, REALTIME_RANGE, REALTIME_INTERVAL } from 'lib/constants';
 import styles from './RealtimeDashboard.module.css';
 
@@ -29,8 +22,6 @@ function filterWebsite(data, id) {
 }
 
 export default function RealtimeDashboard() {
-  const { locale } = useLocale();
-  const countryNames = useCountryNames(locale);
   const [data, setData] = useState();
   const [websiteId, setWebsiteId] = useState(0);
   const { data: init, loading } = useFetch('/api/realtime/init');
@@ -40,11 +31,6 @@ export default function RealtimeDashboard() {
     interval: REALTIME_INTERVAL,
     headers: { [TOKEN_HEADER]: init?.token },
   });
-
-  const renderCountryName = useCallback(
-    ({ x }) => <span className={locale}>{countryNames[x]}</span>,
-    [countryNames],
-  );
 
   const realtimeData = useMemo(() => {
     if (data) {
@@ -61,28 +47,6 @@ export default function RealtimeDashboard() {
 
     return data;
   }, [data, websiteId]);
-
-  const countries = useMemo(() => {
-    if (realtimeData?.sessions) {
-      return percentFilter(
-        realtimeData.sessions
-          .reduce((arr, { country }) => {
-            if (country) {
-              const row = arr.find(({ x }) => x === country);
-
-              if (!row) {
-                arr.push({ x: country, y: 1 });
-              } else {
-                row.y += 1;
-              }
-            }
-            return arr;
-          }, [])
-          .sort(firstBy('y', -1)),
-      );
-    }
-    return [];
-  }, [realtimeData?.sessions]);
 
   useEffect(() => {
     if (init && !data) {
@@ -118,7 +82,7 @@ export default function RealtimeDashboard() {
       <RealtimeHeader
         websites={websites}
         websiteId={websiteId}
-        data={{ ...realtimeData, countries }}
+        data={{ ...realtimeData }}
         onSelect={setWebsiteId}
       />
       <div className={styles.chart}>
@@ -136,20 +100,6 @@ export default function RealtimeDashboard() {
           </GridColumn>
           <GridColumn xs={12} lg={8}>
             <RealtimeLog websiteId={websiteId} data={realtimeData} websites={websites} />
-          </GridColumn>
-        </GridRow>
-        <GridRow>
-          <GridColumn xs={12} lg={4}>
-            <DataTable
-              title={<FormattedMessage id="metrics.countries" defaultMessage="Countries" />}
-              metric={<FormattedMessage id="metrics.visitors" defaultMessage="Visitors" />}
-              data={countries}
-              renderLabel={renderCountryName}
-              height={500}
-            />
-          </GridColumn>
-          <GridColumn xs={12} lg={8}>
-            <WorldMap data={countries} />
           </GridColumn>
         </GridRow>
       </GridLayout>

@@ -96,12 +96,21 @@ import { removeTrailingSlash } from '../lib/url';
       uuid,
     );
 
-  const trackEvent = (event_value, event_type = 'custom', url = currentUrl, uuid = website) =>
+  const trackEvent = (
+    event_value,
+    event_type = 'custom',
+    kc_user_id,
+    admin_url,
+    url = currentUrl,
+    uuid = website,
+  ) =>
     collect(
       'event',
       {
         event_type,
         event_value,
+        kc_user_id,
+        admin_url,
         url,
       },
       uuid,

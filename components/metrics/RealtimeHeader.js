@@ -16,7 +16,7 @@ export default function RealtimeHeader({ websites, data, websiteId, onSelect }) 
     })),
   );
 
-  const { pageviews, sessions, events, countries } = data;
+  const { pageviews, sessions, events } = data;
 
   return (
     <>
@@ -38,10 +38,6 @@ export default function RealtimeHeader({ websites, data, websiteId, onSelect }) 
         <MetricCard
           label={<FormattedMessage id="metrics.events" defaultMessage="Events" />}
           value={events.length}
-        />
-        <MetricCard
-          label={<FormattedMessage id="metrics.countries" defaultMessage="Countries" />}
-          value={countries.length}
         />
       </div>
     </>

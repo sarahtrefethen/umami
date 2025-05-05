@@ -79,8 +79,10 @@ create table umami.event (
     created_at timestamp with time zone default current_timestamp,
     url varchar(500) not null,
     event_type varchar(50) not null,
-    event_value varchar(50) not null,
-    pan_account_id int references pandium.organizations(id) on delete cascade
+    event_value text not null,
+    pan_account_id int references pandium.organizations(id) on delete cascade,
+    kc_user_id varchar(36) references public.user_entity(id),
+    admin_url text
 );
 
 ALTER TABLE umami.event ENABLE ROW LEVEL SECURITY;
@@ -110,7 +112,6 @@ create index event_session_id_idx on umami.event(session_id);
 create index event_pan_account_id_idx on umami.event(pan_account_id);
 
 insert into pandium.organizations (id, name, org_type) values (420, 'pandium', 'ACCOUNT');
-insert into umami.account (username, password, is_admin, pan_account_id) values ('admin', '$2b$10$BUli0c.muyCW1ErNJc3jL.vFRFtFJWrT8/GcR4A.sUdCznaXiqFXa', true, 420);
 
 GRANT USAGE ON SCHEMA umami TO umami_app_user;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA umami TO umami_app_user;

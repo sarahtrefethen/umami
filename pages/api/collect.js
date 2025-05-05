@@ -50,9 +50,18 @@ export default async (req, res) => {
 
     await savePageView(website_id, session_id, url, referrer, pan_account_id);
   } else if (type === 'event') {
-    const { url, event_type, event_value } = payload;
+    const { url, event_type, event_value, kc_user_id, admin_url } = payload;
 
-    await saveEvent(website_id, session_id, url, event_type, event_value, pan_account_id);
+    await saveEvent(
+      website_id,
+      session_id,
+      url,
+      event_type,
+      event_value,
+      pan_account_id,
+      kc_user_id,
+      admin_url,
+    );
   } else {
     return badRequest(res);
   }

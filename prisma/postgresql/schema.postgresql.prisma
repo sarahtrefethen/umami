@@ -25,10 +25,12 @@ model event {
   created_at  DateTime? @default(now()) @db.Timestamptz(6)
   url         String    @db.VarChar(500)
   event_type  String    @db.VarChar(50)
-  event_value String    @db.VarChar(50)
+  event_value String    @db.Text
   session     session   @relation(fields: [session_id], references: [session_id])
   website     website   @relation(fields: [website_id], references: [website_id])
   pan_account_id Int?
+  kc_user_id  String?   @db.VarChar(36)
+  admin_url   String?   @db.Text
 
   @@index([created_at], name: "event_created_at_idx")
   @@index([session_id], name: "event_session_id_idx")

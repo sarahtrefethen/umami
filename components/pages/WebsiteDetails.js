@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import classNames from 'classnames';
 import WebsiteChart from 'components/metrics/WebsiteChart';
-import WorldMap from 'components/common/WorldMap';
 import Page from 'components/layout/Page';
 import GridLayout, { GridRow, GridColumn } from 'components/layout/GridLayout';
 import MenuLayout from 'components/layout/MenuLayout';
@@ -39,7 +38,6 @@ export default function WebsiteDetails({ websiteId }) {
     headers: { [TOKEN_HEADER]: shareToken?.token },
   });
   const [chartLoaded, setChartLoaded] = useState(false);
-  const [countryData, setCountryData] = useState();
   const [eventsData, setEventsData] = useState();
   const {
     resolve,
@@ -131,6 +129,14 @@ export default function WebsiteDetails({ websiteId }) {
               <ReferrersTable {...tableProps} />
             </GridColumn>
           </GridRow>
+          <GridRow className={classNames({ [styles.hidden]: !eventsData?.length > 0 })}>
+            <GridColumn xs={12} md={12} lg={4}>
+              <EventsTable {...tableProps} onDataLoad={setEventsData} />
+            </GridColumn>
+            <GridColumn xs={12} md={12} lg={8}>
+              <EventsChart className={styles.eventschart} websiteId={websiteId} />
+            </GridColumn>
+          </GridRow>
           <GridRow>
             <GridColumn md={12} lg={4}>
               <BrowsersTable {...tableProps} />
@@ -140,22 +146,6 @@ export default function WebsiteDetails({ websiteId }) {
             </GridColumn>
             <GridColumn md={12} lg={4}>
               <DevicesTable {...tableProps} />
-            </GridColumn>
-          </GridRow>
-          <GridRow>
-            <GridColumn xs={12} md={12} lg={8}>
-              <WorldMap data={countryData} />
-            </GridColumn>
-            <GridColumn xs={12} md={12} lg={4}>
-              <CountriesTable {...tableProps} onDataLoad={setCountryData} />
-            </GridColumn>
-          </GridRow>
-          <GridRow className={classNames({ [styles.hidden]: !eventsData?.length > 0 })}>
-            <GridColumn xs={12} md={12} lg={4}>
-              <EventsTable {...tableProps} onDataLoad={setEventsData} />
-            </GridColumn>
-            <GridColumn xs={12} md={12} lg={8}>
-              <EventsChart className={styles.eventschart} websiteId={websiteId} />
             </GridColumn>
           </GridRow>
         </GridLayout>

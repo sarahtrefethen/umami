@@ -19,7 +19,7 @@ function getTable(type) {
 
 function getColumn(type) {
   if (type === 'event') {
-    return `concat(event_type, '\t', event_value)`;
+    return `concat(event_type, '\t', event_value, '-url-', admin_url)`;
   }
   return type;
 }

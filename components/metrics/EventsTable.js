@@ -46,10 +46,19 @@ export default function EventsTable({ websiteId, ...props }) {
 
 const Label = ({ value }) => {
   const [event, label] = value.split('\t');
+  const [description, url] = label.split('-url-');
   return (
     <>
       <Tag>{event}</Tag>
-      {label}
+      <span>
+        {url ? (
+          <a href={url} target="_blank" rel="noreferrer">
+            {description}
+          </a>
+        ) : (
+          { description }
+        )}
+      </span>
     </>
   );
 };
