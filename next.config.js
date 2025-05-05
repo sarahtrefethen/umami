@@ -6,7 +6,7 @@ module.exports = {
     VERSION: pkg.version,
     FORCE_SSL: !!process.env.FORCE_SSL,
   },
-  basePath: process.env.BASE_PATH,
+  basePath: '/umami',
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,

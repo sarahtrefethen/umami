@@ -4,7 +4,13 @@ const chalk = require('chalk');
 const prompts = require('prompts');
 const { PrismaClient } = require('@prisma/client');
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: `postgresql://${process.env.PAN_SEC_POSTGRES_USER}:${process.env.PAN_SEC_POSTGRES_PASSWORD}@${process.env.PAN_CFG_POSTGRES_SERVER}:5432/keycloak?schema=umami`,
+    },
+  },
+});
 const SALT_ROUNDS = 10;
 
 const runQuery = async query => {

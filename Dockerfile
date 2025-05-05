@@ -1,10 +1,5 @@
 # Build image
 FROM node:12.18-alpine AS build
-ARG BASE_PATH
-ARG DATABASE_TYPE
-ENV BASE_PATH=$BASE_PATH
-ENV DATABASE_URL "postgresql://umami:umami@db:5432/umami" \
-    DATABASE_TYPE=$DATABASE_TYPE
 WORKDIR /build
 
 RUN yarn config set --home enableTelemetry 0
@@ -36,6 +31,7 @@ COPY --from=build /build/node_modules/.prisma/ ./node_modules/.prisma/
 COPY --from=build /build/yarn.lock /build/package.json ./
 COPY --from=build /build/.next ./.next
 COPY --from=build /build/public ./public
+COPY --from=build /build/next.config.js ./
 
 USER node
 

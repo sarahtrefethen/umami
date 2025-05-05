@@ -1,10 +1,12 @@
-drop table if exists event;
-drop table if exists pageview;
-drop table if exists session;
-drop table if exists website;
-drop table if exists account;
+-- psql -h 127.0.0.1 -U keycloak -d keycloak -f umami/sql/schema.postgresql.sql --
 
-create table account (
+drop table if exists umami.event;
+drop table if exists umami.pageview;
+drop table if exists umami.session;
+drop table if exists umami.website;
+drop table if exists umami.account;
+
+create table umami.account (
     user_id serial primary key,
     username varchar(255) unique not null,
     password varchar(60) not null,
@@ -13,20 +15,20 @@ create table account (
     updated_at timestamp with time zone default current_timestamp
 );
 
-create table website (
+create table umami.website (
     website_id serial primary key,
     website_uuid uuid unique not null,
-    user_id int not null references account(user_id) on delete cascade,
+    user_id int not null references umami.account(user_id) on delete cascade,
     name varchar(100) not null,
     domain varchar(500),
     share_id varchar(64) unique,
     created_at timestamp with time zone default current_timestamp
 );
 
-create table session (
+create table umami.session (
     session_id serial primary key,
     session_uuid uuid unique not null,
-    website_id int not null references website(website_id) on delete cascade,
+    website_id int not null references umami.website(website_id) on delete cascade,
     created_at timestamp with time zone default current_timestamp,
     hostname varchar(100),
     browser varchar(20),
@@ -37,38 +39,39 @@ create table session (
     country char(2)
 );
 
-create table pageview (
+create table umami.pageview (
     view_id serial primary key,
-    website_id int not null references website(website_id) on delete cascade,
-    session_id int not null references session(session_id) on delete cascade,
+    website_id int not null references umami.website(website_id) on delete cascade,
+    session_id int not null references umami.session(session_id) on delete cascade,
     created_at timestamp with time zone default current_timestamp,
     url varchar(500) not null,
     referrer varchar(500)
 );
 
-create table event (
+create table umami.event (
     event_id serial primary key,
-    website_id int not null references website(website_id) on delete cascade,
-    session_id int not null references session(session_id) on delete cascade,
+    website_id int not null references umami.website(website_id) on delete cascade,
+    session_id int not null references umami.session(session_id) on delete cascade,
     created_at timestamp with time zone default current_timestamp,
     url varchar(500) not null,
     event_type varchar(50) not null,
     event_value varchar(50) not null
 );
 
-create index website_user_id_idx on website(user_id);
+create index website_user_id_idx on umami.website(user_id);
 
-create index session_created_at_idx on session(created_at);
-create index session_website_id_idx on session(website_id);
+create index session_created_at_idx on umami.session(created_at);
+create index session_website_id_idx on umami.session(website_id);
 
-create index pageview_created_at_idx on pageview(created_at);
-create index pageview_website_id_idx on pageview(website_id);
-create index pageview_session_id_idx on pageview(session_id);
-create index pageview_website_id_created_at_idx on pageview(website_id, created_at);
-create index pageview_website_id_session_id_created_at_idx on pageview(website_id, session_id, created_at);
+create index pageview_created_at_idx on umami.pageview(created_at);
+create index pageview_website_id_idx on umami.pageview(website_id);
+create index pageview_session_id_idx on umami.pageview(session_id);
 
-create index event_created_at_idx on event(created_at);
-create index event_website_id_idx on event(website_id);
-create index event_session_id_idx on event(session_id);
+create index pageview_website_id_created_at_idx on umami.pageview(website_id, created_at);
+create index pageview_website_id_session_id_created_at_idx on umami.pageview(website_id, session_id, created_at);
 
-insert into account (username, password, is_admin) values ('admin', '$2b$10$BUli0c.muyCW1ErNJc3jL.vFRFtFJWrT8/GcR4A.sUdCznaXiqFXa', true);
+create index event_created_at_idx on umami.event(created_at);
+create index event_website_id_idx on umami.event(website_id);
+create index event_session_id_idx on umami.event(session_id);
+
+insert into umami.account (username, password, is_admin) values ('admin', '$2b$10$BUli0c.muyCW1ErNJc3jL.vFRFtFJWrT8/GcR4A.sUdCznaXiqFXa', true);
